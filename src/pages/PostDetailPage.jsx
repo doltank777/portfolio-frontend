@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { getPostDetail, deletePost } from "../api/postApi";
@@ -12,14 +12,9 @@ export default function PostDetailPage() {
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
   const [likeCount, setLikeCount] = useState(0);
-  const loadedPostIdRef = useRef(null);
 
   useEffect(() => {
-    if (loadedPostIdRef.current !== id) {
-      loadPost();
-      loadedPostIdRef.current = id;
-    }
-
+    loadPost();
     loadComments();
     loadLikes();
   }, [id]);
@@ -108,58 +103,87 @@ export default function PostDetailPage() {
   };
 
   if (!post) {
-    return <div>로딩중...</div>;
+    return <div style={styles.loading}>로딩중...</div>;
   }
 
   const loginUser = getUsernameFromToken();
   const isWriter = loginUser === post.username;
 
   return (
-    <div>
-      <h1>{post.title}</h1>
-      <div>
-        <span>작성자: {post.username}</span>
-        <span> 👀 조회수 {post.viewCount || 0}</span>
-        <span> ❤️ 좋아요 {likeCount}</span>
+    <div style={styles.container}>
+      <div style={styles.postCard}>
+        <h1 style={styles.title}>{post.title}</h1>
+
+        <div style={styles.metaBox}>
+          <span>작성자: {post.username}</span>
+          <span>👀 조회수 {post.viewCount || 0}</span>
+          <span>❤️ 좋아요 {likeCount}</span>
+        </div>
+
+        <hr style={styles.divider} />
+
+        <div style={styles.content}>{post.content}</div>
+
+        <div style={styles.buttonRow}>
+          <button onClick={() => navigate("/")} style={styles.listButton}>
+            목록
+          </button>
+
+          <button onClick={toggleLike} style={styles.actionButton}>
+            ❤️ 좋아요
+          </button>
+
+          {isWriter && (
+            <>
+              <button
+                onClick={() => navigate(`/posts/edit/${id}`)}
+                style={styles.editButton}
+              >
+                수정
+              </button>
+              <button onClick={remove} style={styles.deleteButton}>
+                삭제
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
-      <hr />
+      <section style={styles.commentSection}>
+        <h3 style={styles.commentTitle}>댓글</h3>
 
-      <div>{post.content}</div>
+        <div style={styles.commentInputBox}>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="댓글을 입력하세요."
+            style={styles.textarea}
+          />
+          <button onClick={writeComment} style={styles.commentButton}>
+            댓글 작성
+          </button>
+        </div>
 
-      <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
-        <button onClick={() => navigate("/")}>목록</button>
-        <button onClick={toggleLike}>좋아요</button>
-
-        {isWriter && (
-          <>
-            <button onClick={() => navigate(`/posts/edit/${id}`)}>수정</button>
-            <button onClick={remove}>삭제</button>
-          </>
+        {comments.length === 0 ? (
+          <p style={styles.emptyComment}>등록된 댓글이 없습니다.</p>
+        ) : (
+          comments.map((comment) => (
+            <div key={comment.id} style={styles.commentCard}>
+              <div style={styles.commentTop}>
+                <strong>{comment.username}</strong>
+                {loginUser === comment.username && (
+                  <button
+                    onClick={() => removeComment(comment.id)}
+                    style={styles.commentDeleteButton}
+                  >
+                    삭제
+                  </button>
+                )}
+              </div>
+              <p style={styles.commentText}>{comment.content}</p>
+            </div>
+          ))
         )}
-      </div>
-
-      <hr />
-
-      <section>
-        <h3>댓글</h3>
-
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="댓글을 입력하세요."
-        />
-        <button onClick={writeComment}>댓글 작성</button>
-
-        {comments.map((comment) => (
-          <div key={comment.id}>
-            <strong>{comment.username}</strong>
-            <p>{comment.content}</p>
-            {loginUser === comment.username && (
-              <button onClick={() => removeComment(comment.id)}>삭제</button>
-            )}
-          </div>
-        ))}
       </section>
     </div>
   );
@@ -169,7 +193,7 @@ const styles = {
   container: {
     maxWidth: "900px",
     margin: "40px auto",
-    padding: "0 16px",
+    padding: "0 16px 40px",
   },
   loading: {
     maxWidth: "900px",
@@ -177,31 +201,39 @@ const styles = {
     padding: "0 16px",
     fontSize: "18px",
   },
+  postCard: {
+    backgroundColor: "#fff",
+    border: "1px solid #e5e7eb",
+    borderRadius: "16px",
+    padding: "28px",
+    boxShadow: "0 4px 16px rgba(0,0,0,0.05)",
+  },
   title: {
-    marginBottom: "16px",
+    margin: "0 0 16px",
     fontSize: "32px",
     fontWeight: "700",
-    color: "#222",
+    color: "#111827",
+    lineHeight: 1.3,
   },
   metaBox: {
     display: "flex",
     gap: "16px",
     flexWrap: "wrap",
-    color: "#555",
+    color: "#6b7280",
     fontSize: "14px",
     alignItems: "center",
   },
   divider: {
     margin: "20px 0",
     border: "none",
-    borderTop: "1px solid #e5e5e5",
+    borderTop: "1px solid #e5e7eb",
   },
   content: {
     minHeight: "200px",
-    lineHeight: 1.7,
+    lineHeight: 1.8,
     whiteSpace: "pre-wrap",
     fontSize: "16px",
-    color: "#222",
+    color: "#1f2937",
   },
   buttonRow: {
     display: "flex",
@@ -214,15 +246,16 @@ const styles = {
     border: "none",
     borderRadius: "8px",
     backgroundColor: "#f3f4f6",
+    color: "#111827",
     cursor: "pointer",
     fontWeight: "bold",
-    color: "#222",
   },
   actionButton: {
     padding: "10px 14px",
     border: "none",
     borderRadius: "8px",
     backgroundColor: "#ffeded",
+    color: "#b91c1c",
     cursor: "pointer",
     fontWeight: "bold",
   },
@@ -231,6 +264,7 @@ const styles = {
     border: "none",
     borderRadius: "8px",
     backgroundColor: "#eef4ff",
+    color: "#1d4ed8",
     cursor: "pointer",
     fontWeight: "bold",
   },
@@ -239,12 +273,22 @@ const styles = {
     border: "none",
     borderRadius: "8px",
     backgroundColor: "#ffecec",
+    color: "#c62828",
     cursor: "pointer",
     fontWeight: "bold",
-    color: "#c62828",
   },
   commentSection: {
-    marginTop: "32px",
+    marginTop: "28px",
+    backgroundColor: "#fff",
+    border: "1px solid #e5e7eb",
+    borderRadius: "16px",
+    padding: "24px",
+    boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
+  },
+  commentTitle: {
+    margin: "0 0 16px",
+    fontSize: "22px",
+    color: "#111827",
   },
   commentInputBox: {
     display: "flex",
@@ -256,31 +300,33 @@ const styles = {
     width: "100%",
     minHeight: "100px",
     padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
+    borderRadius: "10px",
+    border: "1px solid #d1d5db",
     resize: "vertical",
     fontSize: "14px",
     boxSizing: "border-box",
+    outline: "none",
   },
   commentButton: {
     alignSelf: "flex-end",
     padding: "10px 14px",
     border: "none",
     borderRadius: "8px",
-    backgroundColor: "#222",
+    backgroundColor: "#111827",
     color: "#fff",
     cursor: "pointer",
     fontWeight: "bold",
   },
   emptyComment: {
-    color: "#666",
+    color: "#6b7280",
+    margin: 0,
   },
   commentCard: {
     padding: "14px",
-    border: "1px solid #e5e5e5",
+    border: "1px solid #e5e7eb",
     borderRadius: "10px",
     marginBottom: "12px",
-    backgroundColor: "#fff",
+    backgroundColor: "#f9fafb",
   },
   commentTop: {
     display: "flex",
@@ -295,9 +341,12 @@ const styles = {
     backgroundColor: "#ffecec",
     color: "#c62828",
     cursor: "pointer",
+    fontSize: "13px",
   },
   commentText: {
     margin: 0,
     whiteSpace: "pre-wrap",
+    color: "#374151",
+    lineHeight: 1.6,
   },
 };
