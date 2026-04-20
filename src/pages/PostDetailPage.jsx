@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { getPostDetail, deletePost } from "../api/postApi";
 import { getUsernameFromToken } from "../utils/auth";
 
 export default function PostDetailPage() {
@@ -16,12 +17,11 @@ export default function PostDetailPage() {
     loadPost();
     loadComments();
     loadLikes();
-  }, []);
+  }, [id]);
 
-  // 게시글 조회
   const loadPost = async () => {
     try {
-      const res = await api.get(`/posts/${id}`);
+      const res = await getPostDetail(id);
       setPost(res.data);
     } catch (error) {
       console.log(error);
@@ -30,7 +30,6 @@ export default function PostDetailPage() {
     }
   };
 
-  // 댓글 조회
   const loadComments = async () => {
     try {
       const res = await api.get(`/comments/${id}`);
@@ -40,7 +39,6 @@ export default function PostDetailPage() {
     }
   };
 
-  // 좋아요 수 조회
   const loadLikes = async () => {
     try {
       const res = await api.get(`/likes/${id}`);
@@ -50,7 +48,6 @@ export default function PostDetailPage() {
     }
   };
 
-  // 좋아요 토글
   const toggleLike = async () => {
     try {
       const res = await api.post(`/likes/${id}`);
@@ -62,7 +59,6 @@ export default function PostDetailPage() {
     }
   };
 
-  // 댓글 작성
   const writeComment = async () => {
     if (!content.trim()) {
       alert("댓글 내용을 입력하세요.");
@@ -70,10 +66,7 @@ export default function PostDetailPage() {
     }
 
     try {
-      await api.post(`/comments/${id}`, {
-        content: content
-      });
-
+      await api.post(`/comments/${id}`, { content });
       setContent("");
       loadComments();
     } catch (error) {
@@ -82,7 +75,6 @@ export default function PostDetailPage() {
     }
   };
 
-  // 댓글 삭제
   const removeComment = async (commentId) => {
     const ok = window.confirm("댓글 삭제하시겠습니까?");
     if (!ok) return;
@@ -96,13 +88,12 @@ export default function PostDetailPage() {
     }
   };
 
-  // 게시글 삭제
   const remove = async () => {
     const ok = window.confirm("게시글 삭제하시겠습니까?");
     if (!ok) return;
 
     try {
-      await api.delete(`/posts/${id}`);
+      await deletePost(id);
       alert("삭제 완료");
       navigate("/");
     } catch (error) {
@@ -112,162 +103,204 @@ export default function PostDetailPage() {
   };
 
   if (!post) {
-    return <div style={{ padding: "50px" }}>로딩중...</div>;
+    return <div style={styles.loading}>로딩중...</div>;
   }
 
   const loginUser = getUsernameFromToken();
   const isWriter = loginUser === post.username;
 
   return (
-    <div style={{ width: "700px", margin: "50px auto" }}>
-      {/* 제목 */}
-      <h1>{post.title}</h1>
+    <div style={styles.container}>
+      <h1 style={styles.title}>{post.title}</h1>
 
-      {/* 작성자 */}
-      <div style={{ color: "#666", marginBottom: "20px" }}>
-        작성자: {post.username}
+      <div style={styles.metaBox}>
+        <span>작성자: {post.username}</span>
+        <span>👀 조회수 {post.viewCount || 0}</span>
+        <span>❤️ 좋아요 {likeCount}</span>
       </div>
 
-      <hr />
+      <hr style={styles.divider} />
 
-      {/* 본문 */}
-      <div
-        style={{
-          minHeight: "250px",
-          padding: "20px 0",
-          lineHeight: "1.8"
-        }}
-      >
-        {post.content}
-      </div>
+      <div style={styles.content}>{post.content}</div>
 
-      {/* 좋아요 */}
-      <div style={{ margin: "20px 0" }}>
-        <button
-          onClick={toggleLike}
-          style={{
-            padding: "12px 24px",
-            border: "none",
-            borderRadius: "30px",
-            background: "#ff4757",
-            color: "white",
-            fontSize: "16px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.15)"
-          }}
-        >
-          ❤️ 좋아요 {likeCount}
-        </button>
-      </div>
-
-      <hr />
-
-      {/* 댓글 입력 */}
-      <div style={{ marginTop: "20px" }}>
-        <textarea
-          rows="3"
-          style={{
-            width: "100%",
-            padding: "10px"
-          }}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="댓글 입력"
-        />
-
-        <button
-          onClick={writeComment}
-          style={{ marginTop: "10px" }}
-        >
-          댓글 등록
-        </button>
-      </div>
-
-      {/* 댓글 목록 */}
-      <div style={{ marginTop: "30px" }}>
-        <h3>댓글 {comments.length}개</h3>
-
-        {comments.length === 0 ? (
-          <p>첫 댓글을 남겨보세요.</p>
-        ) : (
-          comments.map((comment) => {
-            const commentWriter =
-              comment.user?.username || comment.username;
-
-            const isMyComment =
-              loginUser === commentWriter;
-
-            return (
-              <div
-                key={comment.id}
-                style={{
-                  borderBottom: "1px solid #ddd",
-                  padding: "10px 0"
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between"
-                  }}
-                >
-                  <strong>{commentWriter}</strong>
-
-                  {isMyComment && (
-                    <button
-                      onClick={() =>
-                        removeComment(comment.id)
-                      }
-                      style={{
-                        fontSize: "12px",
-                        color: "red"
-                      }}
-                    >
-                      삭제
-                    </button>
-                  )}
-                </div>
-
-                <div style={{ marginTop: "5px" }}>
-                  {comment.content}
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      <hr />
-
-      {/* 하단 버튼 */}
-      <div
-        style={{
-          marginTop: "20px",
-          display: "flex",
-          gap: "10px"
-        }}
-      >
-        <button onClick={() => navigate("/")}>
-          목록
+      <div style={styles.buttonRow}>
+        <button onClick={toggleLike} style={styles.actionButton}>
+          ❤️ 좋아요
         </button>
 
         {isWriter && (
           <>
             <button
-              onClick={() =>
-                navigate(`/posts/edit/${id}`)
-              }
+              onClick={() => navigate(`/posts/edit/${id}`)}
+              style={styles.editButton}
             >
               수정
             </button>
-
-            <button onClick={remove}>
+            <button onClick={remove} style={styles.deleteButton}>
               삭제
             </button>
           </>
         )}
       </div>
+
+      <hr style={styles.divider} />
+
+      <section style={styles.commentSection}>
+        <h3>댓글</h3>
+
+        <div style={styles.commentInputBox}>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="댓글을 입력하세요."
+            style={styles.textarea}
+          />
+          <button onClick={writeComment} style={styles.commentButton}>
+            댓글 작성
+          </button>
+        </div>
+
+        {comments.length === 0 ? (
+          <p style={styles.emptyComment}>등록된 댓글이 없습니다.</p>
+        ) : (
+          comments.map((comment) => (
+            <div key={comment.id} style={styles.commentCard}>
+              <div style={styles.commentTop}>
+                <strong>{comment.username}</strong>
+                {loginUser === comment.username && (
+                  <button
+                    onClick={() => removeComment(comment.id)}
+                    style={styles.commentDeleteButton}
+                  >
+                    삭제
+                  </button>
+                )}
+              </div>
+              <p style={styles.commentText}>{comment.content}</p>
+            </div>
+          ))
+        )}
+      </section>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    maxWidth: "900px",
+    margin: "40px auto",
+    padding: "0 16px",
+  },
+  loading: {
+    maxWidth: "900px",
+    margin: "40px auto",
+    padding: "0 16px",
+    fontSize: "18px",
+  },
+  title: {
+    marginBottom: "16px",
+  },
+  metaBox: {
+    display: "flex",
+    gap: "16px",
+    flexWrap: "wrap",
+    color: "#555",
+    fontSize: "14px",
+  },
+  divider: {
+    margin: "20px 0",
+    border: "none",
+    borderTop: "1px solid #e5e5e5",
+  },
+  content: {
+    minHeight: "200px",
+    lineHeight: 1.7,
+    whiteSpace: "pre-wrap",
+  },
+  buttonRow: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "24px",
+  },
+  actionButton: {
+    padding: "10px 14px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#ffeded",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+  editButton: {
+    padding: "10px 14px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#eef4ff",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+  deleteButton: {
+    padding: "10px 14px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#ffecec",
+    cursor: "pointer",
+    fontWeight: "bold",
+    color: "#c62828",
+  },
+  commentSection: {
+    marginTop: "32px",
+  },
+  commentInputBox: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    marginBottom: "24px",
+  },
+  textarea: {
+    width: "100%",
+    minHeight: "100px",
+    padding: "12px",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
+    resize: "vertical",
+    fontSize: "14px",
+  },
+  commentButton: {
+    alignSelf: "flex-end",
+    padding: "10px 14px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#222",
+    color: "#fff",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+  emptyComment: {
+    color: "#666",
+  },
+  commentCard: {
+    padding: "14px",
+    border: "1px solid #e5e5e5",
+    borderRadius: "10px",
+    marginBottom: "12px",
+    backgroundColor: "#fff",
+  },
+  commentTop: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "8px",
+  },
+  commentDeleteButton: {
+    padding: "6px 10px",
+    border: "none",
+    borderRadius: "6px",
+    backgroundColor: "#ffecec",
+    color: "#c62828",
+    cursor: "pointer",
+  },
+  commentText: {
+    margin: 0,
+    whiteSpace: "pre-wrap",
+  },
+};
