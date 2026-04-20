@@ -124,6 +124,10 @@ export default function PostDetailPage() {
       <div style={styles.content}>{post.content}</div>
 
       <div style={styles.buttonRow}>
+        <button onClick={() => navigate("/")} style={styles.listButton}>
+          목록
+        </button>
+
         <button onClick={toggleLike} style={styles.actionButton}>
           ❤️ 좋아요
         </button>
@@ -199,6 +203,9 @@ const styles = {
   },
   title: {
     marginBottom: "16px",
+    fontSize: "32px",
+    fontWeight: "700",
+    color: "#222",
   },
   metaBox: {
     display: "flex",
@@ -206,6 +213,7 @@ const styles = {
     flexWrap: "wrap",
     color: "#555",
     fontSize: "14px",
+    alignItems: "center",
   },
   divider: {
     margin: "20px 0",
@@ -216,11 +224,23 @@ const styles = {
     minHeight: "200px",
     lineHeight: 1.7,
     whiteSpace: "pre-wrap",
+    fontSize: "16px",
+    color: "#222",
   },
   buttonRow: {
     display: "flex",
     gap: "10px",
     marginTop: "24px",
+    flexWrap: "wrap",
+  },
+  listButton: {
+    padding: "10px 14px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#f3f4f6",
+    cursor: "pointer",
+    fontWeight: "bold",
+    color: "#222",
   },
   actionButton: {
     padding: "10px 14px",
@@ -264,6 +284,7 @@ const styles = {
     border: "1px solid #ddd",
     resize: "vertical",
     fontSize: "14px",
+    boxSizing: "border-box",
   },
   commentButton: {
     alignSelf: "flex-end",
