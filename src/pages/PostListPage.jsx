@@ -51,7 +51,7 @@ export default function PostListPage() {
           <p style={styles.subtitle}>포트폴리오 게시판의 전체 게시글을 확인할 수 있습니다.</p>
         </div>
 
-        <Link to="/posts/write" style={styles.writeButton}>
+        <Link to="/write" style={styles.writeButton}>
           글쓰기
         </Link>
       </div>
@@ -60,7 +60,7 @@ export default function PostListPage() {
         <div style={styles.emptyBox}>
           <h2 style={styles.emptyTitle}>등록된 게시글이 없습니다.</h2>
           <p style={styles.emptyText}>첫 번째 게시글을 작성해서 게시판을 시작해보세요.</p>
-          <Link to="/posts/write" style={styles.emptyButton}>
+          <Link to="/write" style={styles.emptyButton}>
             첫 글 작성하기
           </Link>
         </div>
