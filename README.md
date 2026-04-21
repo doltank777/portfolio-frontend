@@ -1,16 +1,102 @@
-# React + Vite
+# 📌 Portfolio Project (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Spring Boot 기반의 게시판 포트폴리오 프로젝트입니다.
+실제 서비스 구조를 고려하여 **조회수, 좋아요, 인증, 성능 개선**을 중심으로 개발하고 있습니다.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 프로젝트 소개
 
-## React Compiler
+* 사용자 인증 기반 게시판 서비스
+* 조회수 / 좋아요 / CRUD 기능 구현
+* Redis를 활용한 성능 최적화 구조 적용
+* 실제 서비스 수준의 구조 설계 및 구현 목표
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠 기술 스택
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Frontend
+
+* React
+* Axios
+* CSS
+
+### Backend
+
+* Spring Boot
+* JPA (Hibernate)
+* Redis
+
+### Database / Infra
+
+* MySQL
+* Docker
+
+---
+
+## 📌 주요 기능
+
+* 게시글 CRUD
+* 게시글 상세 조회
+* 조회수 증가 기능 (중복 방지 처리)
+* 좋아요 기능 (Redis 기반 처리)
+* 사용자 인증 (JWT 예정 / 적용 중)
+
+---
+
+## ⚙️ 실행 방법
+
+### Frontend
+
+```bash
+npm install
+npm run dev
+```
+
+### Backend
+
+```bash
+./gradlew bootRun
+```
+
+---
+
+## 📂 프로젝트 구조 (Frontend)
+
+```
+src/
+ ├── pages/
+ ├── components/
+ ├── api/
+ ├── styles/
+```
+
+---
+
+## 🚧 진행 상태
+
+현재 프로젝트는 지속적으로 개발 중입니다.
+
+* 조회수 기능 개선 진행
+* 좋아요 UI 고도화 예정
+* 인증 기능 확장 예정
+* UX/UI 개선 진행 중
+
+---
+
+## 💡 개선 및 설계 포인트
+
+* 조회수 중복 증가 방지를 위한 로직 설계
+* Redis를 활용한 좋아요 처리 성능 개선
+* 프론트/백엔드 분리 구조 설계
+* 실제 서비스 구조 기반 API 설계
+
+---
+
+## 👨‍💻 개발자
+
+* 이름: Y.YB
+* GitHub: https://github.com/doltank777
+
+---
