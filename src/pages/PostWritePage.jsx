@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPost } from "../api/postApi";
+import styles from "../styles/postFormStyles";
 
 export default function PostWritePage() {
   const navigate = useNavigate();
@@ -38,13 +39,11 @@ export default function PostWritePage() {
       const res = await createPost(form);
       alert("게시글이 등록되었습니다.");
 
-      // 백엔드에서 생성된 게시글 id 반환 시 상세로 이동
       if (res?.data?.id) {
         navigate(`/posts/${res.data.id}`);
         return;
       }
 
-      // id가 없으면 목록으로 이동
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -131,118 +130,3 @@ export default function PostWritePage() {
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: "900px",
-    margin: "40px auto",
-    padding: "0 16px 40px",
-  },
-  pageHeader: {
-    marginBottom: "24px",
-  },
-  title: {
-    margin: 0,
-    fontSize: "32px",
-    fontWeight: "700",
-    color: "#111827",
-  },
-  subtitle: {
-    margin: "10px 0 0",
-    fontSize: "15px",
-    color: "#6b7280",
-    lineHeight: 1.6,
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    border: "1px solid #e5e7eb",
-    borderRadius: "16px",
-    padding: "28px",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.05)",
-  },
-  field: {
-    marginBottom: "24px",
-  },
-  label: {
-    display: "block",
-    marginBottom: "10px",
-    fontSize: "15px",
-    fontWeight: "700",
-    color: "#111827",
-  },
-  input: {
-    width: "100%",
-    height: "48px",
-    padding: "0 14px",
-    borderRadius: "10px",
-    border: "1px solid #d1d5db",
-    fontSize: "15px",
-    color: "#111827",
-    boxSizing: "border-box",
-    outline: "none",
-  },
-  textarea: {
-    width: "100%",
-    minHeight: "320px",
-    padding: "14px",
-    borderRadius: "10px",
-    border: "1px solid #d1d5db",
-    fontSize: "15px",
-    color: "#111827",
-    lineHeight: 1.7,
-    resize: "vertical",
-    boxSizing: "border-box",
-    outline: "none",
-  },
-  helperRow: {
-    marginTop: "8px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "12px",
-    flexWrap: "wrap",
-  },
-  helperText: {
-    fontSize: "13px",
-    color: "#6b7280",
-  },
-  countText: {
-    fontSize: "13px",
-    color: "#9ca3af",
-    fontWeight: "600",
-  },
-  buttonRow: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "10px",
-    flexWrap: "wrap",
-    marginTop: "28px",
-  },
-  listButton: {
-    padding: "12px 18px",
-    border: "none",
-    borderRadius: "10px",
-    backgroundColor: "#f3f4f6",
-    color: "#111827",
-    cursor: "pointer",
-    fontWeight: "700",
-  },
-  submitButton: {
-    padding: "12px 18px",
-    border: "none",
-    borderRadius: "10px",
-    backgroundColor: "#111827",
-    color: "#ffffff",
-    cursor: "pointer",
-    fontWeight: "700",
-  },
-  submitButtonDisabled: {
-    padding: "12px 18px",
-    border: "none",
-    borderRadius: "10px",
-    backgroundColor: "#9ca3af",
-    color: "#ffffff",
-    cursor: "not-allowed",
-    fontWeight: "700",
-  },
-};
