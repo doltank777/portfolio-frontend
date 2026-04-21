@@ -12,11 +12,14 @@ export default function PostDetailPage() {
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
   const [likeCount, setLikeCount] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
 
   useEffect(() => {
     loadPost();
     loadComments();
     loadLikes();
+    loadMyLikeStatus();
   }, [id]);
 
   const loadPost = async () => {
@@ -48,14 +51,51 @@ export default function PostDetailPage() {
     }
   };
 
-  const toggleLike = async () => {
+  const loadMyLikeStatus = async () => {
     try {
-      const res = await api.post(`/likes/${id}`);
-      alert(res.data);
-      loadLikes();
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setLiked(false);
+        return;
+      }
+
+      const res = await api.get(`/likes/${id}/me`);
+      setLiked(res.data);
     } catch (error) {
       console.log(error);
-      alert("좋아요 실패");
+      setLiked(false);
+    }
+  };
+
+  const toggleLike = async () => {
+    if (likeLoading) return;
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    const prevLiked = liked;
+    const prevLikeCount = likeCount;
+
+    const nextLiked = !prevLiked;
+    const nextLikeCount = prevLiked ? prevLikeCount - 1 : prevLikeCount + 1;
+
+    setLiked(nextLiked);
+    setLikeCount(nextLikeCount);
+    setLikeLoading(true);
+
+    try {
+      await api.post(`/likes/${id}`);
+    } catch (error) {
+      console.log(error);
+      setLiked(prevLiked);
+      setLikeCount(prevLikeCount);
+      alert("좋아요 처리 실패");
+    } finally {
+      setLikeLoading(false);
     }
   };
 
@@ -129,8 +169,12 @@ export default function PostDetailPage() {
             목록
           </button>
 
-          <button onClick={toggleLike} style={styles.actionButton}>
-            ❤️ 좋아요
+          <button
+            onClick={toggleLike}
+            style={liked ? styles.likedButton : styles.actionButton}
+            disabled={likeLoading}
+          >
+            {liked ? "💖 좋아요 취소" : "❤️ 좋아요"}
           </button>
 
           {isWriter && (
@@ -256,6 +300,15 @@ const styles = {
     borderRadius: "8px",
     backgroundColor: "#ffeded",
     color: "#b91c1c",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+  likedButton: {
+    padding: "10px 14px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#fecdd3",
+    color: "#9f1239",
     cursor: "pointer",
     fontWeight: "bold",
   },
