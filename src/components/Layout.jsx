@@ -29,7 +29,7 @@ export default function Layout() {
             </Link>
 
             {isLogin && (
-              <Link to="/posts/write" style={styles.navLink}>
+              <Link to="/write" style={styles.navLink}>
                 글쓰기
               </Link>
             )}
