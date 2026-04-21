@@ -1,0 +1,102 @@
+const authFormStyles = {
+  container: {
+    maxWidth: "520px",
+    margin: "60px auto",
+    padding: "0 16px 40px",
+  },
+  pageHeader: {
+    marginBottom: "24px",
+    textAlign: "center",
+  },
+  title: {
+    margin: 0,
+    fontSize: "32px",
+    fontWeight: "700",
+    color: "#111827",
+  },
+  subtitle: {
+    margin: "10px 0 0",
+    fontSize: "15px",
+    color: "#6b7280",
+    lineHeight: 1.6,
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    border: "1px solid #e5e7eb",
+    borderRadius: "16px",
+    padding: "28px",
+    boxShadow: "0 4px 16px rgba(0,0,0,0.05)",
+  },
+  field: {
+    marginBottom: "20px",
+  },
+  label: {
+    display: "block",
+    marginBottom: "10px",
+    fontSize: "15px",
+    fontWeight: "700",
+    color: "#111827",
+  },
+  input: {
+    width: "100%",
+    height: "48px",
+    padding: "0 14px",
+    borderRadius: "10px",
+    border: "1px solid #d1d5db",
+    fontSize: "15px",
+    color: "#111827",
+    boxSizing: "border-box",
+    outline: "none",
+  },
+  helperText: {
+    display: "block",
+    marginTop: "8px",
+    fontSize: "13px",
+    color: "#6b7280",
+    lineHeight: 1.5,
+  },
+  buttonRow: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    marginTop: "28px",
+  },
+  submitButton: {
+    width: "100%",
+    padding: "12px 18px",
+    border: "none",
+    borderRadius: "10px",
+    backgroundColor: "#111827",
+    color: "#ffffff",
+    cursor: "pointer",
+    fontWeight: "700",
+    fontSize: "15px",
+  },
+  submitButtonDisabled: {
+    width: "100%",
+    padding: "12px 18px",
+    border: "none",
+    borderRadius: "10px",
+    backgroundColor: "#9ca3af",
+    color: "#ffffff",
+    cursor: "not-allowed",
+    fontWeight: "700",
+    fontSize: "15px",
+  },
+  subActionRow: {
+    marginTop: "18px",
+    textAlign: "center",
+  },
+  subActionText: {
+    fontSize: "14px",
+    color: "#6b7280",
+  },
+  subActionLink: {
+    marginLeft: "6px",
+    color: "#2563eb",
+    textDecoration: "none",
+    fontWeight: "700",
+  },
+};
+
+export default authFormStyles;
