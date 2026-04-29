@@ -27,7 +27,6 @@ export default function PostListPage() {
     if (!dateString) return "작성일 없음";
 
     const date = new Date(dateString);
-
     if (Number.isNaN(date.getTime())) return "작성일 없음";
 
     const yyyy = date.getFullYear();
@@ -40,52 +39,70 @@ export default function PostListPage() {
   };
 
   if (loading) {
-    return <div style={styles.loading}>게시글 목록을 불러오는 중입니다...</div>;
+    return (
+      <div className="mx-auto mt-10 max-w-5xl px-4 text-lg text-gray-700">
+        게시글 목록을 불러오는 중입니다...
+      </div>
+    );
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
+    <div className="mx-auto mt-10 max-w-5xl px-4 pb-10">
+      <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 style={styles.title}>게시글 목록</h1>
-          <p style={styles.subtitle}>포트폴리오 게시판의 전체 게시글을 확인할 수 있습니다.</p>
+          <h1 className="text-3xl font-bold text-gray-900">게시글 목록</h1>
+          <p className="mt-2 text-sm leading-6 text-gray-500">
+            포트폴리오 게시판의 전체 게시글을 확인할 수 있습니다.
+          </p>
         </div>
 
-        <Link to="/write" style={styles.writeButton}>
+        <Link
+          to="/write"
+          className="inline-flex rounded-lg bg-gray-900 px-5 py-3 font-bold text-white hover:bg-black"
+        >
           글쓰기
         </Link>
       </div>
 
       {posts.length === 0 ? (
-        <div style={styles.emptyBox}>
-          <h2 style={styles.emptyTitle}>등록된 게시글이 없습니다.</h2>
-          <p style={styles.emptyText}>첫 번째 게시글을 작성해서 게시판을 시작해보세요.</p>
-          <Link to="/write" style={styles.emptyButton}>
+        <div className="rounded-2xl border border-gray-200 bg-white px-6 py-12 text-center shadow-sm">
+          <h2 className="text-2xl font-bold text-gray-900">
+            등록된 게시글이 없습니다.
+          </h2>
+          <p className="mt-3 text-sm text-gray-500">
+            첫 번째 게시글을 작성해서 게시판을 시작해보세요.
+          </p>
+          <Link
+            to="/write"
+            className="mt-6 inline-flex rounded-lg bg-gray-900 px-5 py-3 font-bold text-white hover:bg-black"
+          >
             첫 글 작성하기
           </Link>
         </div>
       ) : (
-        <div style={styles.list}>
+        <div className="flex flex-col gap-4">
           {posts.map((post) => (
             <Link
               key={post.id}
               to={`/posts/${post.id}`}
-              style={styles.card}
+              className="block rounded-2xl border border-gray-200 bg-white p-6 text-inherit shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
-              <div style={styles.cardTop}>
-                <h2 style={styles.cardTitle}>{post.title}</h2>
+              <h2 className="text-2xl font-bold leading-snug text-gray-900">
+                {post.title}
+              </h2>
+
+              <div className="mt-4 flex flex-wrap gap-3 text-sm text-gray-500">
+                <span>작성자: {post.username}</span>
+                <span>작성일: {formatDate(post.createdAt)}</span>
               </div>
 
-              <div style={styles.metaRow}>
-                <span style={styles.metaText}>작성자: {post.username}</span>
-                <span style={styles.metaText}>
-                  작성일: {formatDate(post.createdAt)}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700">
+                  ❤️ 좋아요 {post.likeCount || 0}
                 </span>
-              </div>
-
-              <div style={styles.infoRow}>
-                <span style={styles.infoBadge}>❤️ 좋아요 {post.likeCount || 0}</span>
-                <span style={styles.infoBadge}>👀 조회수 {post.viewCount || 0}</span>
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700">
+                  👀 조회수 {post.viewCount || 0}
+                </span>
               </div>
             </Link>
           ))}
@@ -94,128 +111,3 @@ export default function PostListPage() {
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: "960px",
-    margin: "40px auto",
-    padding: "0 16px 40px",
-  },
-  loading: {
-    maxWidth: "960px",
-    margin: "40px auto",
-    padding: "0 16px",
-    fontSize: "18px",
-    color: "#374151",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: "16px",
-    marginBottom: "28px",
-    flexWrap: "wrap",
-  },
-  title: {
-    margin: 0,
-    fontSize: "32px",
-    fontWeight: "700",
-    color: "#111827",
-  },
-  subtitle: {
-    margin: "10px 0 0",
-    color: "#6b7280",
-    fontSize: "15px",
-  },
-  writeButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "12px 18px",
-    borderRadius: "10px",
-    backgroundColor: "#111827",
-    color: "#ffffff",
-    textDecoration: "none",
-    fontWeight: "700",
-    minWidth: "96px",
-  },
-  emptyBox: {
-    backgroundColor: "#ffffff",
-    border: "1px solid #e5e7eb",
-    borderRadius: "16px",
-    padding: "48px 24px",
-    textAlign: "center",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
-  },
-  emptyTitle: {
-    margin: "0 0 12px",
-    fontSize: "24px",
-    color: "#111827",
-  },
-  emptyText: {
-    margin: "0 0 20px",
-    color: "#6b7280",
-    fontSize: "15px",
-  },
-  emptyButton: {
-    display: "inline-block",
-    padding: "12px 18px",
-    borderRadius: "10px",
-    backgroundColor: "#111827",
-    color: "#ffffff",
-    textDecoration: "none",
-    fontWeight: "700",
-  },
-  list: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  card: {
-    display: "block",
-    backgroundColor: "#ffffff",
-    border: "1px solid #e5e7eb",
-    borderRadius: "16px",
-    padding: "22px",
-    textDecoration: "none",
-    color: "inherit",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
-    transition: "transform 0.15s ease, box-shadow 0.15s ease",
-  },
-  cardTop: {
-    marginBottom: "14px",
-  },
-  cardTitle: {
-    margin: 0,
-    fontSize: "22px",
-    fontWeight: "700",
-    color: "#111827",
-    lineHeight: 1.4,
-  },
-  metaRow: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "12px",
-    marginBottom: "14px",
-  },
-  metaText: {
-    fontSize: "14px",
-    color: "#6b7280",
-  },
-  infoRow: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "10px",
-  },
-  infoBadge: {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "8px 12px",
-    borderRadius: "999px",
-    backgroundColor: "#f9fafb",
-    border: "1px solid #e5e7eb",
-    fontSize: "14px",
-    fontWeight: "600",
-    color: "#374151",
-  },
-};
