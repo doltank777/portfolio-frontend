@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios";
-import styles from "../styles/authFormStyles";
+import { register } from "../api/authApi";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -10,6 +9,7 @@ export default function RegisterPage() {
     username: "",
     password: "",
   });
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -21,7 +21,7 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
 
     if (!form.username.trim()) {
@@ -41,7 +41,8 @@ export default function RegisterPage() {
 
     try {
       setLoading(true);
-      await api.post("/auth/register", form);
+      await register(form);
+
       alert("회원가입이 완료되었습니다.");
       navigate("/login");
     } catch (error) {
@@ -53,36 +54,32 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.pageHeader}>
-        <h1 style={styles.title}>회원가입</h1>
-        <p style={styles.subtitle}>
+    <div className="mx-auto mt-16 max-w-xl px-4 pb-10">
+      <div className="mb-6 text-center">
+        <h1 className="text-3xl font-bold text-gray-900">회원가입</h1>
+        <p className="mt-2 text-sm leading-6 text-gray-500">
           새 계정을 생성하고 포트폴리오 게시판 서비스를 시작해보세요.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} style={styles.card}>
-        <div style={styles.field}>
-          <label htmlFor="username" style={styles.label}>
+      <form onSubmit={submit} className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
+        <div className="mb-5">
+          <label htmlFor="username" className="mb-2 block font-bold text-gray-900">
             아이디
           </label>
           <input
             id="username"
-            type="text"
             name="username"
             value={form.username}
             onChange={handleChange}
             placeholder="아이디를 입력하세요"
-            style={styles.input}
             maxLength={30}
+            className="h-12 w-full rounded-lg border border-gray-300 px-4 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10"
           />
-          <span style={styles.helperText}>
-            영문, 숫자 중심으로 기억하기 쉬운 아이디를 추천합니다.
-          </span>
         </div>
 
-        <div style={styles.field}>
-          <label htmlFor="password" style={styles.label}>
+        <div className="mb-7">
+          <label htmlFor="password" className="mb-2 block font-bold text-gray-900">
             비밀번호
           </label>
           <input
@@ -92,27 +89,25 @@ export default function RegisterPage() {
             value={form.password}
             onChange={handleChange}
             placeholder="비밀번호를 입력하세요"
-            style={styles.input}
             maxLength={100}
+            className="h-12 w-full rounded-lg border border-gray-300 px-4 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10"
           />
-          <span style={styles.helperText}>
-            비밀번호는 4자 이상 입력해주세요.
-          </span>
+          <p className="mt-2 text-sm text-gray-500">비밀번호는 4자 이상 입력해주세요.</p>
         </div>
 
-        <div style={styles.buttonRow}>
-          <button
-            type="submit"
-            style={loading ? styles.submitButtonDisabled : styles.submitButton}
-            disabled={loading}
-          >
-            {loading ? "가입 중..." : "회원가입"}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full rounded-lg px-4 py-3 font-bold text-white ${
+            loading ? "cursor-not-allowed bg-gray-400" : "bg-gray-900 hover:bg-black"
+          }`}
+        >
+          {loading ? "가입 중..." : "회원가입"}
+        </button>
 
-        <div style={styles.subActionRow}>
-          <span style={styles.subActionText}>이미 계정이 있으신가요?</span>
-          <Link to="/login" style={styles.subActionLink}>
+        <div className="mt-5 text-center text-sm text-gray-500">
+          이미 계정이 있으신가요?
+          <Link to="/login" className="ml-2 font-bold text-blue-600 hover:underline">
             로그인
           </Link>
         </div>
