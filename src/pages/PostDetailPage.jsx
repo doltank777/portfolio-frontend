@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { getPostDetail, deletePost } from "../api/postApi";
 import { getUsernameFromToken } from "../utils/auth";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Textarea from "../components/ui/Textarea";
 
 export default function PostDetailPage() {
   const { id } = useParams();
@@ -54,7 +57,8 @@ export default function PostDetailPage() {
   const loadMyLikeStatus = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      if (!token) {
+
+      if (!token || token === "undefined" || token === "null") {
         setLiked(false);
         return;
       }
@@ -71,6 +75,7 @@ export default function PostDetailPage() {
     if (likeLoading) return;
 
     const token = localStorage.getItem("accessToken");
+
     if (!token) {
       alert("로그인이 필요합니다.");
       navigate("/login");
@@ -81,7 +86,9 @@ export default function PostDetailPage() {
     const prevLikeCount = likeCount;
 
     const nextLiked = !prevLiked;
-    const nextLikeCount = prevLiked ? prevLikeCount - 1 : prevLikeCount + 1;
+    const nextLikeCount = prevLiked
+      ? Math.max(prevLikeCount - 1, 0)
+      : prevLikeCount + 1;
 
     setLiked(nextLiked);
     setLikeCount(nextLikeCount);
@@ -142,7 +149,7 @@ export default function PostDetailPage() {
 
   if (!post) {
     return (
-      <div className="mx-auto mt-10 max-w-4xl px-4 text-lg text-gray-700">
+      <div className="mx-auto mt-10 max-w-4xl px-4 text-base text-gray-600">
         로딩중...
       </div>
     );
@@ -153,12 +160,12 @@ export default function PostDetailPage() {
 
   return (
     <div className="mx-auto mt-10 max-w-4xl px-4 pb-10">
-      <article className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
-        <h1 className="text-3xl font-bold leading-snug text-gray-900">
+      <Card className="px-7 py-6">
+        <h1 className="text-2xl font-bold leading-snug text-gray-900">
           {post.title}
         </h1>
 
-        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-500">
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-gray-500">
           <span>작성자: {post.username}</span>
           <span>👀 조회수 {post.viewCount || 0}</span>
           <span>❤️ 좋아요 {likeCount}</span>
@@ -171,65 +178,58 @@ export default function PostDetailPage() {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
-          <button
-            onClick={() => navigate("/")}
-            className="rounded-lg bg-gray-100 px-4 py-2.5 font-bold text-gray-900 hover:bg-gray-200"
-          >
+          <Button type="button" variant="outline" onClick={() => navigate("/")}>
             목록
-          </button>
+          </Button>
 
-          <button
+          <Button
+            type="button"
+            variant={liked ? "danger" : "outline"}
             onClick={toggleLike}
             disabled={likeLoading}
-            className={`rounded-lg px-4 py-2.5 font-bold ${
-              liked
-                ? "bg-rose-200 text-rose-800 hover:bg-rose-300"
-                : "bg-red-50 text-red-700 hover:bg-red-100"
-            } ${likeLoading ? "cursor-not-allowed opacity-70" : ""}`}
           >
             {liked ? "💖 좋아요 취소" : "❤️ 좋아요"}
-          </button>
+          </Button>
 
           {isWriter && (
             <>
-              <button
+              <Button
+                type="button"
+                variant="secondary"
                 onClick={() => navigate(`/posts/edit/${id}`)}
-                className="rounded-lg bg-blue-50 px-4 py-2.5 font-bold text-blue-700 hover:bg-blue-100"
               >
                 수정
-              </button>
-              <button
-                onClick={remove}
-                className="rounded-lg bg-red-50 px-4 py-2.5 font-bold text-red-700 hover:bg-red-100"
-              >
+              </Button>
+
+              <Button type="button" variant="danger" onClick={remove}>
                 삭제
-              </button>
+              </Button>
             </>
           )}
         </div>
-      </article>
+      </Card>
 
-      <section className="mt-7 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h3 className="text-2xl font-bold text-gray-900">댓글</h3>
+      <Card className="mt-7 px-7 py-6">
+        <h2 className="text-xl font-semibold text-gray-900">댓글</h2>
 
         <div className="mt-5 flex flex-col gap-3">
-          <textarea
+          <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="댓글을 입력하세요."
-            className="min-h-[100px] w-full resize-y rounded-lg border border-gray-300 p-4 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10"
+            rows={4}
           />
-          <button
-            onClick={writeComment}
-            className="self-end rounded-lg bg-gray-900 px-4 py-2.5 font-bold text-white hover:bg-black"
-          >
+
+          <Button type="button" className="self-end" onClick={writeComment}>
             댓글 작성
-          </button>
+          </Button>
         </div>
 
         <div className="mt-6">
           {comments.length === 0 ? (
-            <p className="text-sm text-gray-500">등록된 댓글이 없습니다.</p>
+            <p className="rounded-xl border border-dashed border-gray-300 py-8 text-center text-sm text-gray-500">
+              등록된 댓글이 없습니다.
+            </p>
           ) : (
             comments.map((comment) => (
               <div
@@ -237,26 +237,30 @@ export default function PostDetailPage() {
                 className="mb-3 rounded-xl border border-gray-200 bg-gray-50 p-4"
               >
                 <div className="mb-2 flex items-center justify-between gap-3">
-                  <strong className="text-gray-900">{comment.username}</strong>
+                  <strong className="text-sm font-semibold text-gray-900">
+                    {comment.username}
+                  </strong>
 
                   {loginUser === comment.username && (
-                    <button
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="danger"
                       onClick={() => removeComment(comment.id)}
-                      className="rounded-md bg-red-50 px-3 py-1.5 text-sm font-bold text-red-700 hover:bg-red-100"
                     >
                       삭제
-                    </button>
+                    </Button>
                   )}
                 </div>
 
-                <p className="whitespace-pre-wrap leading-7 text-gray-700">
+                <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">
                   {comment.content}
                 </p>
               </div>
             ))
           )}
         </div>
-      </section>
+      </Card>
     </div>
   );
 }

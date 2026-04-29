@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPost } from "../api/postApi";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import Textarea from "../components/ui/Textarea";
+import Card from "../components/ui/Card";
 
 export default function PostWritePage() {
   const navigate = useNavigate();
@@ -63,66 +67,71 @@ export default function PostWritePage() {
         </p>
       </div>
 
-      <form onSubmit={submit} className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
-        <div className="mb-6">
-          <label htmlFor="title" className="mb-2 block font-bold text-gray-900">
-            제목
-          </label>
-          <input
-            id="title"
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            placeholder="게시글 제목을 입력하세요"
-            maxLength={100}
-            className="h-12 w-full rounded-lg border border-gray-300 px-4 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10"
-          />
-          <div className="mt-2 flex flex-wrap justify-between gap-2 text-sm">
-            <span className="text-gray-500">명확한 제목을 작성하면 게시글이 더 잘 보입니다.</span>
-            <span className="font-semibold text-gray-400">{form.title.length}/100</span>
+      <Card className="p-7">
+        <form onSubmit={submit}>
+          <div className="mb-6">
+            <label htmlFor="title" className="mb-2 block font-bold text-gray-900">
+              제목
+            </label>
+
+            <Input
+              id="title"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              placeholder="게시글 제목을 입력하세요"
+              maxLength={100}
+            />
+
+            <div className="mt-2 flex flex-wrap justify-between gap-2 text-sm">
+              <span className="text-gray-500">
+                명확한 제목을 작성하면 게시글이 더 잘 보입니다.
+              </span>
+              <span className="font-semibold text-gray-400">
+                {form.title.length}/100
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="mb-7">
-          <label htmlFor="content" className="mb-2 block font-bold text-gray-900">
-            내용
-          </label>
-          <textarea
-            id="content"
-            name="content"
-            value={form.content}
-            onChange={handleChange}
-            placeholder="게시글 내용을 입력하세요"
-            maxLength={5000}
-            className="min-h-[320px] w-full resize-y rounded-lg border border-gray-300 p-4 leading-7 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10"
-          />
-          <div className="mt-2 flex flex-wrap justify-between gap-2 text-sm">
-            <span className="text-gray-500">프로젝트 내용, 구현 내용, 트러블슈팅 등을 작성해보세요.</span>
-            <span className="font-semibold text-gray-400">{form.content.length}/5000</span>
+          <div className="mb-7">
+            <label htmlFor="content" className="mb-2 block font-bold text-gray-900">
+              내용
+            </label>
+
+            <Textarea
+              id="content"
+              name="content"
+              value={form.content}
+              onChange={handleChange}
+              placeholder="게시글 내용을 입력하세요"
+              maxLength={5000}
+            />
+
+            <div className="mt-2 flex flex-wrap justify-between gap-2 text-sm">
+              <span className="text-gray-500">
+                프로젝트 내용, 구현 내용, 트러블슈팅 등을 작성해보세요.
+              </span>
+              <span className="font-semibold text-gray-400">
+                {form.content.length}/5000
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="flex flex-wrap justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            disabled={loading}
-            className="rounded-lg bg-gray-100 px-5 py-3 font-bold text-gray-900 hover:bg-gray-200"
-          >
-            목록
-          </button>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/")}
+              disabled={loading}
+            >
+              목록
+            </Button>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`rounded-lg px-5 py-3 font-bold text-white ${
-              loading ? "cursor-not-allowed bg-gray-400" : "bg-gray-900 hover:bg-black"
-            }`}
-          >
-            {loading ? "등록 중..." : "게시글 등록"}
-          </button>
-        </div>
-      </form>
+            <Button type="submit" disabled={loading}>
+              {loading ? "등록 중..." : "게시글 등록"}
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   );
 }
